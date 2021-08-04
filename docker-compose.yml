@@ -1,0 +1,22 @@
+version: "3"
+services:
+  vpn:
+    image: ghcr.io/bubuntux/nordvpn
+    cap_add:
+      - NET_ADMIN               # Required
+    environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
+      - USER=user@email.com     # Required
+      - "PASS=pas$word"         # Required
+      - CONNECT=United_States
+      - TECHNOLOGY=NordLynx
+      - NETWORK=192.168.1.0/24  # So it can be accessed within the local network
+    ports:
+      - 8080:8080
+  torrent:
+    image: ghcr.io/linuxserver/qbittorrent
+    network_mode: service:vpn
+    depends_on:
+      - vpn
+      
+# The torrent service would be available at http://localhost:8080/ 
+# or anywhere inside of the local network http://192.168.1.xxx:8080
